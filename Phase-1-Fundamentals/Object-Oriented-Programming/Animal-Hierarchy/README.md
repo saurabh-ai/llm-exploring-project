@@ -1,0 +1,3 @@
+# Animal Hierarchy
+
+Project placeholder.

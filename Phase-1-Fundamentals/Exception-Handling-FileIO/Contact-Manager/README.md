@@ -1,0 +1,3 @@
+# Contact Manager
+
+Project placeholder.

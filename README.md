@@ -30,6 +30,11 @@ This repository tracks my progress through a **12-16 month Java mastery program*
 └── Progress-Log/             # Daily/weekly progress tracking
 ```
 
+All projects listed in the learning plan have been initialized in this
+repository. Each directory contains a `README.md` and placeholder source
+folder following a standard Maven structure. This layout makes it easy to
+navigate and gradually fill in implementations as learning progresses.
+
 ## 🛠️ Current Phase
 
 **Phase:** [Update as you progress]  
