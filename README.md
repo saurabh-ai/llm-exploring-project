@@ -30,6 +30,7 @@ This repository tracks my progress through a **12-16 month Java mastery program*
 └── Progress-Log/             # Daily/weekly progress tracking
 ```
 
+All project directories for each phase have been created to organize upcoming code.
 ## 🛠️ Current Phase
 
 **Phase:** [Update as you progress]  
@@ -42,7 +43,7 @@ This repository tracks my progress through a **12-16 month Java mastery program*
 ### Phase 1: Fundamentals (Months 1-3)
 **Topics:** Java syntax, OOP principles, exception handling, file I/O  
 **Key Projects:**
-- [ ] Calculator Application
+- [x] Calculator Application
 - [ ] Bank Account Management System
 - [ ] Contact Manager with File Persistence
 - [ ] **Capstone:** Personal Finance Manager
@@ -107,14 +108,14 @@ ProjectName/
 ## 📈 Progress Tracking
 
 ### Completed Projects
-- [ ] Phase 1 Projects (0/4)
+- [ ] Phase 1 Projects (1/4)
 - [ ] Phase 2 Projects (0/4)
 - [ ] Phase 3 Projects (0/4)
 - [ ] Phase 4 Projects (0/4)
 - [ ] Capstone Projects (0/3)
 
 ### Skills Acquired
-- [ ] Java Fundamentals
+- [x] Java Fundamentals
 - [ ] Object-Oriented Programming
 - [ ] Exception Handling
 - [ ] Collections Framework
