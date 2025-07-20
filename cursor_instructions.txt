@@ -1,0 +1,199 @@
+# Cursor IDE Rules for Java Mastery Learning Project
+# Save this as .cursorrules in your project root
+
+# Project Context
+project_type: "Java Learning Repository"
+learning_phase: "Phase 1" # Update as you progress: Phase 1/2/3/4
+current_focus: "Java Fundamentals and OOP" # Update based on current learning
+
+# Java Code Generation Rules
+java:
+  version: "17"
+  package_structure: "com.javamastery.{project-name}"
+  coding_style: "Oracle Java Conventions"
+  
+  # Code Quality Standards
+  code_quality:
+    - "Always include comprehensive Javadoc comments"
+    - "Use meaningful variable and method names"
+    - "Implement proper exception handling with try-catch blocks"
+    - "Follow SOLID principles where applicable"
+    - "Keep methods small and focused (max 20 lines when possible)"
+    - "Use appropriate access modifiers (private, protected, public)"
+    
+  # Documentation Requirements
+  documentation:
+    - "Add class-level Javadoc explaining purpose and learning objectives"
+    - "Include method-level Javadoc with @param and @return tags"
+    - "Add inline comments explaining complex logic"
+    - "Include TODO comments for future enhancements"
+    - "Add learning notes explaining key concepts demonstrated"
+
+# Project Structure Rules
+file_organization:
+  src_structure: |
+    src/
+    ├── main/
+    │   ├── java/
+    │   │   └── com/
+    │   │       └── javamastery/
+    │   │           └── {project}/
+    │   └── resources/
+    └── test/
+        └── java/
+            └── com/
+                └── javamastery/
+                    └── {project}/
+  
+  required_files:
+    - "README.md for each project"
+    - "pom.xml with appropriate dependencies"
+    - "LEARNING_NOTES.md documenting concepts"
+
+# Learning Phase-Specific Rules
+phase_1_fundamentals:
+  focus: "Core Java syntax, OOP principles, basic I/O"
+  allowed_libraries: ["java.util", "java.io", "java.lang"]
+  project_complexity: "Simple single-class or small multi-class applications"
+  learning_objectives:
+    - "Master basic syntax and control structures"
+    - "Understand classes, objects, inheritance, polymorphism"
+    - "Practice exception handling and file operations"
+
+phase_2_intermediate:
+  focus: "Collections, Generics, Lambda expressions, Multithreading"
+  allowed_libraries: ["java.util.*", "java.util.concurrent", "java.util.stream"]
+  project_complexity: "Multi-class applications with advanced data handling"
+  learning_objectives:
+    - "Master Collections framework usage"
+    - "Implement functional programming with lambdas"
+    - "Build concurrent applications safely"
+
+phase_3_advanced:
+  focus: "Design patterns, JDBC, Spring Framework basics"
+  allowed_libraries: ["Spring Boot", "JDBC drivers", "JUnit 5"]
+  project_complexity: "Layered applications with database integration"
+  learning_objectives:
+    - "Apply design patterns appropriately"
+    - "Build database-driven applications"
+    - "Create RESTful web services"
+
+phase_4_expert:
+  focus: "Microservices, Performance, Testing, DevOps"
+  allowed_libraries: ["Spring Security", "Docker", "Performance tools"]
+  project_complexity: "Enterprise-level applications and microservices"
+  learning_objectives:
+    - "Architect scalable systems"
+    - "Implement security best practices"
+    - "Optimize application performance"
+
+# Code Completion Preferences
+completion_rules:
+  - "Suggest complete methods with proper error handling"
+  - "Include unit test suggestions for new classes"
+  - "Propose design pattern implementations when appropriate"
+  - "Offer both beginner and advanced approaches"
+  - "Include performance considerations for Phase 3-4"
+
+# Testing Requirements
+testing:
+  framework: "JUnit 5"
+  coverage_target: "80%"
+  test_types:
+    - "Unit tests for all public methods"
+    - "Integration tests for database operations"
+    - "Edge case testing with invalid inputs"
+  
+  naming_convention: "TestClassName should end with 'Test'"
+  test_structure: |
+    @Test
+    @DisplayName("Should [expected behavior] when [condition]")
+    void testMethodName() {
+        // Given
+        // When  
+        // Then
+    }
+
+# Error Handling Standards
+error_handling:
+  - "Always validate input parameters"
+  - "Use specific exception types, not generic Exception"
+  - "Include meaningful error messages"
+  - "Log errors appropriately"
+  - "Provide recovery mechanisms where possible"
+
+# Code Review Automation
+auto_review:
+  check_for:
+    - "Missing Javadoc comments"
+    - "Unused imports"
+    - "Magic numbers (suggest constants)"
+    - "Long methods (suggest refactoring)"
+    - "Missing exception handling"
+    - "Inconsistent naming conventions"
+
+# Learning Integration
+learning_support:
+  - "Explain design decisions in comments"
+  - "Suggest alternative implementations"
+  - "Highlight learning objectives achieved"
+  - "Reference relevant Java concepts"
+  - "Provide links to documentation when helpful"
+
+# Build Configuration
+maven:
+  java_version: "17"
+  default_dependencies:
+    - "junit-jupiter-engine:5.9.2"
+    - "junit-jupiter-api:5.9.2"
+  
+  phase_specific_dependencies:
+    phase_3:
+      - "spring-boot-starter-web"
+      - "spring-boot-starter-data-jpa"
+      - "h2database"
+    phase_4:
+      - "spring-boot-starter-security"
+      - "spring-boot-starter-actuator"
+      - "micrometer-core"
+
+# Refactoring Suggestions
+refactoring:
+  suggest_when:
+    - "Method exceeds 20 lines"
+    - "Class has more than 7 methods"
+    - "Duplicate code detected"
+    - "Complex conditional logic found"
+    - "Performance bottlenecks identified"
+
+# Documentation Generation
+auto_documentation:
+  - "Generate method signatures with parameter descriptions"
+  - "Create class diagrams for complex relationships"
+  - "Suggest README content for new projects"
+  - "Generate API documentation for web services"
+
+# Learning Progress Tracking
+progress_integration:
+  - "Update progress comments in main README"
+  - "Suggest next learning topics"
+  - "Identify completed learning objectives"
+  - "Recommend code review points"
+
+# Custom Commands
+# Use these with Cursor's command palette
+commands:
+  create_project: "Generate complete project structure with Maven config"
+  add_tests: "Generate comprehensive test suite for current class"
+  review_code: "Analyze code for learning objectives and best practices"
+  refactor_suggest: "Suggest refactoring opportunities for better design"
+  add_docs: "Generate missing Javadoc comments"
+  
+# Performance Optimization (Phase 3-4)
+performance:
+  suggest_optimizations:
+    - "Use StringBuilder for string concatenation"
+    - "Implement lazy loading where appropriate"
+    - "Suggest caching opportunities"
+    - "Recommend efficient algorithms"
+    - "Profile memory usage patterns"
