@@ -133,7 +133,25 @@ The application includes comprehensive testing:
 
 - **DatabaseTestApp**: Validates core database operations
 - **ServiceTestApp**: Tests business logic and validation rules
-- **Integration Tests**: End-to-end workflow validation
+- **Integration Tests**: End-to-end workflow validation with complete inventory lifecycle
+- **Unit Tests**: Service layer validation and error handling tests
+- **CLI Interface**: Interactive command-line testing environment
+
+### Running Different Test Types
+
+```bash
+# Database layer tests
+mvn exec:java -Dexec.mainClass="com.javamastery.inventory.DatabaseTestApp"
+
+# Service layer tests
+mvn exec:java -Dexec.mainClass="com.javamastery.inventory.ServiceTestApp"
+
+# Unit and integration tests
+mvn test
+
+# Interactive CLI testing
+mvn exec:java@cli
+```
 
 ## Technology Stack
 
@@ -156,13 +174,17 @@ The application initializes with sample data including:
 
 ## Enterprise Features
 
-- **Layered Architecture**: Proper separation of concerns
-- **Exception Handling**: Comprehensive error management
-- **Data Validation**: Input validation at multiple layers
-- **Audit Trail**: Complete tracking of all changes
-- **Business Rules**: Enforced data integrity
-- **Connection Pooling**: Production-ready database access
-- **Configuration Management**: Externalized configuration
-- **Logging**: Comprehensive application logging
+- **Layered Architecture**: Proper separation of concerns (UI, Service, DAO, Model)
+- **Exception Handling**: Comprehensive error management with custom exceptions
+- **Data Validation**: Input validation at multiple layers (UI, Service, Database)
+- **Audit Trail**: Complete tracking of all inventory changes and stock movements
+- **Business Rules**: Enforced data integrity and workflow validation
+- **Connection Pooling**: Production-ready database access with HikariCP
+- **Configuration Management**: Externalized database configuration
+- **Logging**: Comprehensive application logging with SLF4J and Logback
+- **Reporting**: CSV/JSON export capabilities for inventory analysis
+- **Multi-Interface**: Both GUI (Swing) and CLI interfaces for different use cases
+- **Purchase Order Workflow**: Complete order lifecycle management (Draft → Sent → Confirmed → Received)
+- **Stock Allocation**: Reserve inventory for pending orders with proper tracking
 
-This inventory management system demonstrates enterprise-level development practices with Java, JDBC, and proper software architecture patterns.
+This inventory management system demonstrates enterprise-level development practices with Java, JDBC, and proper software architecture patterns suitable for Phase 3 Advanced Java development.
