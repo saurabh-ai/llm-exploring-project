@@ -22,6 +22,7 @@ A comprehensive inventory management system demonstrating advanced database inte
 
 ### User Interface
 - **Swing GUI**: Professional desktop application interface
+- **CLI Interface**: Complete command-line interface for system interaction and testing
 - **Dashboard**: Overview of inventory status and key metrics
 - **Tabbed Interface**: Organized access to different functional areas
 - **Real-time Updates**: Automatic refresh capabilities
@@ -61,18 +62,30 @@ A comprehensive inventory management system demonstrating advanced database inte
    mvn clean compile
    ```
 
-2. **Run with sample data:**
+2. **Run with GUI (Swing interface):**
    ```bash
    mvn exec:java
+   # or specifically
+   mvn exec:java@gui
    ```
 
-3. **Run tests:**
+3. **Run with CLI (Command Line Interface):**
+   ```bash
+   mvn exec:java -Dexec.mainClass="com.javamastery.inventory.cli.InventoryCLI"
+   # or use the predefined execution
+   mvn exec:java@cli
+   ```
+
+4. **Run tests:**
    ```bash
    # Test database layer
    mvn exec:java -Dexec.mainClass="com.javamastery.inventory.DatabaseTestApp"
    
    # Test service layer
    mvn exec:java -Dexec.mainClass="com.javamastery.inventory.ServiceTestApp"
+   
+   # Run unit tests
+   mvn test
    ```
 
 ### Configuration
@@ -90,16 +103,19 @@ The application uses H2 in-memory database by default. To use MySQL:
 - **CategoryService**: Category management with business validation
 - **ProductService**: Product lifecycle management with SKU generation
 - **InventoryService**: Stock operations with movement tracking
+- **PurchaseOrderService**: Order workflow management with status transitions
 
 ### Data Access
 - **BaseDao**: Common CRUD operations for all entities
 - **Specific DAOs**: Entity-specific data access with advanced queries
 - **Transaction Management**: ACID compliance with proper rollback
+- **Connection Pooling**: Efficient resource management
 
 ### Models
 - **Rich Entities**: Business logic embedded in model classes
 - **Validation**: Comprehensive data validation
 - **Enumerations**: Type-safe status and movement tracking
+- **Workflow Management**: Proper state transitions for purchase orders
 
 ## Business Rules Implemented
 
