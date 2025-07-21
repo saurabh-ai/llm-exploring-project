@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -103,6 +104,18 @@ public class DatabaseInitializer {
     private List<String> getCreateTableStatements() {
         List<String> statements = new ArrayList<>();
         
+        // Users table
+        statements.add("""
+            CREATE TABLE IF NOT EXISTS users (
+                user_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                username VARCHAR(100) NOT NULL UNIQUE,
+                email VARCHAR(255) NOT NULL UNIQUE,
+                role ENUM('ADMIN', 'MANAGER', 'EMPLOYEE') NOT NULL DEFAULT 'EMPLOYEE',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            )
+            """);
+
         // Categories table
         statements.add("""
             CREATE TABLE IF NOT EXISTS categories (
@@ -134,12 +147,15 @@ public class DatabaseInitializer {
                 description TEXT,
                 sku VARCHAR(100) UNIQUE NOT NULL,
                 category_id BIGINT,
+                supplier_id BIGINT,
                 unit_price DECIMAL(10,2) NOT NULL,
                 cost_price DECIMAL(10,2) NOT NULL,
+                quantity_in_stock INT NOT NULL DEFAULT 0,
                 reorder_level INT DEFAULT 10,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                FOREIGN KEY (category_id) REFERENCES categories(category_id)
+                FOREIGN KEY (category_id) REFERENCES categories(category_id),
+                FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id)
             )
             """);
         
@@ -156,7 +172,22 @@ public class DatabaseInitializer {
             )
             """);
         
-        // Stock movements table
+        // Inventory transactions table
+        statements.add("""
+            CREATE TABLE IF NOT EXISTS inventory_transactions (
+                transaction_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                product_id BIGINT NOT NULL,
+                transaction_type ENUM('IN', 'OUT') NOT NULL,
+                quantity INT NOT NULL,
+                reason VARCHAR(255) NOT NULL,
+                transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                user_id BIGINT NOT NULL,
+                FOREIGN KEY (product_id) REFERENCES products(product_id),
+                FOREIGN KEY (user_id) REFERENCES users(user_id)
+            )
+            """);
+
+        // Stock movements table (keeping for backward compatibility)
         statements.add("""
             CREATE TABLE IF NOT EXISTS stock_movements (
                 movement_id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -212,9 +243,14 @@ public class DatabaseInitializer {
     private List<String> getCreateIndexStatements() {
         List<String> statements = new ArrayList<>();
         
+        statements.add("CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)");
         statements.add("CREATE INDEX IF NOT EXISTS idx_products_sku ON products(sku)");
         statements.add("CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id)");
+        statements.add("CREATE INDEX IF NOT EXISTS idx_products_supplier ON products(supplier_id)");
         statements.add("CREATE INDEX IF NOT EXISTS idx_inventory_product ON inventory(product_id)");
+        statements.add("CREATE INDEX IF NOT EXISTS idx_inventory_transactions_product ON inventory_transactions(product_id)");
+        statements.add("CREATE INDEX IF NOT EXISTS idx_inventory_transactions_user ON inventory_transactions(user_id)");
+        statements.add("CREATE INDEX IF NOT EXISTS idx_inventory_transactions_date ON inventory_transactions(transaction_date)");
         statements.add("CREATE INDEX IF NOT EXISTS idx_stock_movements_product ON stock_movements(product_id)");
         statements.add("CREATE INDEX IF NOT EXISTS idx_stock_movements_created ON stock_movements(created_at)");
         statements.add("CREATE INDEX IF NOT EXISTS idx_purchase_orders_supplier ON purchase_orders(supplier_id)");
@@ -233,6 +269,25 @@ public class DatabaseInitializer {
             conn.setAutoCommit(false);
             
             try (Statement stmt = conn.createStatement()) {
+                // Check if sample data already exists
+                try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM users")) {
+                    rs.next();
+                    if (rs.getInt(1) > 0) {
+                        logger.info("Sample data already exists, skipping insert");
+                        conn.commit();
+                        return;
+                    }
+                }
+                
+                // Insert sample users
+                stmt.execute("""
+                    INSERT INTO users (username, email, role) VALUES
+                    ('admin', 'admin@inventory.com', 'ADMIN'),
+                    ('manager1', 'manager1@inventory.com', 'MANAGER'),
+                    ('employee1', 'employee1@inventory.com', 'EMPLOYEE'),
+                    ('employee2', 'employee2@inventory.com', 'EMPLOYEE')
+                    """);
+                
                 // Insert sample categories
                 stmt.execute("""
                     INSERT INTO categories (name, description) VALUES
