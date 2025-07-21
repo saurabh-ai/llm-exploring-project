@@ -1,0 +1,121 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        # Scheduler Service Routes
+        - id: scheduler-service
+          uri: lb://scheduler-service
+          predicates:
+            - Path=/api/v1/jobs/**
+          filters:
+            - StripPrefix=0
+            - CircuitBreaker=scheduler-service
+            
+        # Executor Service Routes  
+        - id: executor-service
+          uri: lb://executor-service
+          predicates:
+            - Path=/api/v1/executor/**
+          filters:
+            - StripPrefix=0
+            - CircuitBreaker=executor-service
+            
+        # Monitoring Service Routes
+        - id: monitoring-dashboard
+          uri: lb://monitoring-service
+          predicates:
+            - Path=/dashboard/**
+          filters:
+            - StripPrefix=0
+            
+        # Health Check Routes
+        - id: scheduler-health
+          uri: lb://scheduler-service
+          predicates:
+            - Path=/scheduler/actuator/**
+          filters:
+            - StripPrefix=1
+            
+        - id: executor-health
+          uri: lb://executor-service
+          predicates:
+            - Path=/executor/actuator/**
+          filters:
+            - StripPrefix=1
+            
+      # Global CORS configuration
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+            allowedHeaders: "*"
+            
+      # Discovery configuration
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+# Server Configuration            
+server:
+  port: 8080
+
+# Eureka Client Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8888/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
+# Management and Monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,gateway
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Circuit Breaker Configuration
+resilience4j:
+  circuitbreaker:
+    instances:
+      scheduler-service:
+        register-health-indicator: true
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+        wait-duration-in-open-state: 30s
+        failure-rate-threshold: 50
+      executor-service:
+        register-health-indicator: true
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+        wait-duration-in-open-state: 30s
+        failure-rate-threshold: 50
+
+# Logging Configuration
+logging:
+  level:
+    com.javamastery.distributed: DEBUG
+    org.springframework.cloud.gateway: INFO
+    org.springframework.cloud: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
