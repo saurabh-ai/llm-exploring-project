@@ -11,16 +11,16 @@ spring:
 
 # Server Configuration            
 server:
-  port: 8082
+  port: 8083
   servlet:
     context-path: /executor
 
 # Eureka Client Configuration
 eureka:
   client:
-    enabled: false
+    enabled: true
     service-url:
-      defaultZone: http://localhost:8888/eureka/
+      defaultZone: http://localhost:8761/eureka/
     fetch-registry: true
     register-with-eureka: true
   instance:

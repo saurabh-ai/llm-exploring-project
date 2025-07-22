@@ -7,16 +7,21 @@ A comprehensive distributed task scheduler system demonstrating advanced Java co
 This system implements a microservices architecture with the following components:
 
 ### Core Services
-- **Config Service** (Port 8888): Service discovery (Eureka) + centralized configuration management
-- **Scheduler Service** (Port 8081): Core scheduling engine with job management using Quartz
-- **Executor Service** (Port 8082): Distributed task execution workers with load balancing
-- **Monitoring Service** (Port 8083): Real-time dashboard and metrics collection
+- **Eureka Server** (Port 8761): Service Registry and Discovery Server
+- **Config Service** (Port 8888): Centralized configuration management
+- **User Service** (Port 8081): User authentication, JWT tokens, role-based access control
+- **Scheduler Service** (Port 8082): Core scheduling engine with job management using Quartz
+- **Executor Service** (Port 8083): Distributed task execution workers with load balancing
+- **Notification Service** (Port 8084): Multi-channel notification delivery (Email, SMS, Push)
+- **Monitoring Service** (Port 8085): Real-time dashboard and metrics collection
 - **API Gateway** (Port 8080): Single entry point with routing and circuit breaker patterns
 
 ### Technology Stack
 - **Spring Boot 3.x**: Microservices framework
 - **Spring Cloud**: Service discovery, configuration, gateway
+- **Spring Security**: JWT authentication and role-based authorization
 - **Spring Data JPA**: Database persistence with H2/PostgreSQL
+- **RabbitMQ**: Message queuing for asynchronous communication
 - **Quartz Scheduler**: Advanced job scheduling with cron expressions
 - **Circuit Breaker**: Resilience4j for fault tolerance
 - **Docker**: Containerization and orchestration
@@ -50,28 +55,40 @@ This system implements a microservices architecture with the following component
 
 2. **Start services in order**
    ```bash
-   # 1. Start Config Service (Service Discovery)
+   # 1. Start Eureka Server (Service Discovery)
+   cd eureka-server && mvn spring-boot:run &
+   
+   # 2. Start Config Service (Configuration Management)
    cd config-service && mvn spring-boot:run &
    
-   # 2. Start Scheduler Service
+   # 3. Start User Service (Authentication)
+   cd user-service && mvn spring-boot:run &
+   
+   # 4. Start Scheduler Service
    cd scheduler-service && mvn spring-boot:run &
    
-   # 3. Start Executor Service
+   # 5. Start Executor Service
    cd executor-service && mvn spring-boot:run &
    
-   # 4. Start Monitoring Service
+   # 6. Start Notification Service
+   cd notification-service && mvn spring-boot:run &
+   
+   # 7. Start Monitoring Service
    cd monitoring-service && mvn spring-boot:run &
    
-   # 5. Start API Gateway
+   # 8. Start API Gateway
    cd api-gateway && mvn spring-boot:run &
    ```
 
 3. **Access the application**
-   - **Dashboard**: http://localhost:8083/dashboard
+   - **Dashboard**: http://localhost:8085/dashboard
    - **API Gateway**: http://localhost:8080
-   - **Scheduler API**: http://localhost:8081/scheduler/api/v1/jobs
-   - **Executor API**: http://localhost:8082/executor/api/v1/executor
-   - **Service Discovery**: http://localhost:8888/
+   - **User Service API**: http://localhost:8081/user/api/v1/auth
+   - **Scheduler API**: http://localhost:8082/scheduler/api/v1/jobs
+   - **Executor API**: http://localhost:8083/executor/api/v1/executor
+   - **Notification API**: http://localhost:8084/notification/api/v1/notifications
+   - **Service Discovery**: http://localhost:8761/
+   - **Config Service**: http://localhost:8888/
 
 ## 📊 Features Demonstration
 
@@ -147,16 +164,21 @@ cd scheduler-service && mvn test
 ## 🚦 System Status
 
 ### ✅ Implemented Features
-- [x] Microservices architecture with 5 services
-- [x] Job creation, scheduling, and management
-- [x] Distributed job execution with load balancing
-- [x] Real-time monitoring dashboard
-- [x] Circuit breaker fault tolerance
-- [x] Service discovery and configuration
+- [x] Microservices architecture with 8 services
+- [x] Separate Eureka Server for service discovery (Port 8761)
+- [x] User Management Service with JWT authentication (Port 8081)
+- [x] Job creation, scheduling, and management (Port 8082)
+- [x] Distributed job execution with load balancing (Port 8083)
+- [x] Notification Service with multi-channel delivery (Port 8084)
+- [x] Real-time monitoring dashboard (Port 8085)
+- [x] API Gateway with routing and fault tolerance (Port 8080)
+- [x] Circuit breaker fault tolerance patterns
+- [x] Centralized configuration management
 - [x] REST API with Swagger documentation
-- [x] Docker containerization setup
+- [x] Docker containerization setup with RabbitMQ
+- [x] PostgreSQL database schema with initialization script
 - [x] Health checks and metrics collection
-- [x] Unit and integration tests
+- [x] Unit and integration tests infrastructure
 
 ## 📄 License
 
