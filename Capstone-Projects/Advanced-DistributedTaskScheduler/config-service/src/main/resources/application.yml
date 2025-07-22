@@ -1,0 +1,44 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-service
+  cloud:
+    config:
+      server:
+        git:
+          uri: classpath:/config
+          search-paths: '{application}'
+        default-label: master
+  profiles:
+    active: native
+
+eureka:
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  server:
+    enable-self-preservation: false
+    eviction-interval-timer-in-ms: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.javamastery.distributed: DEBUG
+    org.springframework.cloud: INFO
+    com.netflix.eureka: WARN
+    com.netflix.discovery: WARN
