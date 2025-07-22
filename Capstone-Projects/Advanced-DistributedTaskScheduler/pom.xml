@@ -29,9 +29,12 @@
     
     <modules>
         <module>shared-common</module>
+        <module>eureka-server</module>
         <module>config-service</module>
+        <module>user-service</module>
         <module>scheduler-service</module>
         <module>executor-service</module>
+        <module>notification-service</module>
         <module>monitoring-service</module>
         <module>api-gateway</module>
     </modules>
@@ -52,6 +55,23 @@
                 <groupId>org.quartz-scheduler</groupId>
                 <artifactId>quartz</artifactId>
                 <version>${quartz.version}</version>
+            </dependency>
+            
+            <!-- JWT Dependencies -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>0.11.5</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>0.11.5</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>0.11.5</version>
             </dependency>
             
             <!-- Shared Common Module -->

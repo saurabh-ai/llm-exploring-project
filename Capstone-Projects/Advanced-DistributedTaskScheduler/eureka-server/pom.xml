@@ -11,27 +11,21 @@
         <version>1.0.0</version>
     </parent>
     
-    <artifactId>config-service</artifactId>
-    <name>Configuration Service</name>
-    <description>Centralized configuration management service</description>
+    <artifactId>eureka-server</artifactId>
+    <name>Eureka Server</name>
+    <description>Service Registry and Discovery Server</description>
     
     <dependencies>
-        <!-- Spring Boot Starters -->
+        <!-- Spring Boot Starter Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         
-        <!-- Spring Cloud Config Server -->
+        <!-- Eureka Server -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-config-server</artifactId>
-        </dependency>
-        
-        <!-- Spring Cloud Netflix Eureka Client -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+            <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
         </dependency>
         
         <!-- Actuator for health checks -->
@@ -40,13 +34,7 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         
-        <!-- Shared Common -->
-        <dependency>
-            <groupId>com.javamastery</groupId>
-            <artifactId>shared-common</artifactId>
-        </dependency>
-        
-        <!-- Testing -->
+        <!-- Test Dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -59,8 +47,15 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
-    
 </project>
