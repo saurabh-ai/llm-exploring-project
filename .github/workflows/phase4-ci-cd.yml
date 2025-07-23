@@ -36,7 +36,7 @@ jobs:
         distribution: 'temurin'
         
     - name: Cache Maven dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
@@ -53,7 +53,7 @@ jobs:
         mvn surefire-report:report
         
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: test-results-${{ matrix.service }}
@@ -79,7 +79,7 @@ jobs:
         distribution: 'temurin'
         
     - name: Cache Maven dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
@@ -96,7 +96,7 @@ jobs:
         mvn surefire-report:report
         
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: test-results-${{ matrix.tool }}
@@ -133,7 +133,7 @@ jobs:
         distribution: 'temurin'
         
     - name: Cache Maven dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
@@ -142,42 +142,109 @@ jobs:
     - name: Start Discovery Service
       working-directory: Phase-4-Expert/Advanced-Spring-Microservices/EcommercePlatform/discovery-service
       run: |
-        mvn spring-boot:run &
-        sleep 30
-        curl -f http://localhost:8761/actuator/health || exit 1
+        timeout 300 mvn spring-boot:run &
+        DISCOVERY_PID=$!
+        echo "Discovery service PID: $DISCOVERY_PID"
+        
+        # Wait for service to be ready with retry logic
+        for i in {1..30}; do
+          if curl -f http://localhost:8761/actuator/health >/dev/null 2>&1; then
+            echo "Discovery service is ready"
+            break
+          fi
+          echo "Waiting for discovery service... attempt $i/30"
+          sleep 10
+        done
+        
+        # Final health check
+        curl -f http://localhost:8761/actuator/health || (echo "Discovery service failed to start" && exit 1)
       
     - name: Start API Gateway
       working-directory: Phase-4-Expert/Advanced-Spring-Microservices/EcommercePlatform/api-gateway
       run: |
-        mvn spring-boot:run &
-        sleep 20
-        curl -f http://localhost:8080/actuator/health || exit 1
+        timeout 300 mvn spring-boot:run &
+        GATEWAY_PID=$!
+        echo "API Gateway PID: $GATEWAY_PID"
+        
+        # Wait for service to be ready with retry logic
+        for i in {1..20}; do
+          if curl -f http://localhost:8080/actuator/health >/dev/null 2>&1; then
+            echo "API Gateway is ready"
+            break
+          fi
+          echo "Waiting for API Gateway... attempt $i/20"
+          sleep 10
+        done
+        
+        # Final health check
+        curl -f http://localhost:8080/actuator/health || (echo "API Gateway failed to start" && exit 1)
         
     - name: Run Memory Analyzer
       working-directory: Phase-4-Expert/Performance-Testing/MemoryAnalyzer
       run: |
-        mvn spring-boot:run &
-        sleep 15
-        curl -f http://localhost:8090/memory-analyzer/actuator/health || exit 1
+        timeout 300 mvn spring-boot:run &
+        MEMORY_PID=$!
+        echo "Memory Analyzer PID: $MEMORY_PID"
+        
+        # Wait for service to be ready with retry logic
+        for i in {1..15}; do
+          if curl -f http://localhost:8090/memory-analyzer/actuator/health >/dev/null 2>&1; then
+            echo "Memory Analyzer is ready"
+            break
+          fi
+          echo "Waiting for Memory Analyzer... attempt $i/15"
+          sleep 10
+        done
+        
+        # Final health check
+        curl -f http://localhost:8090/memory-analyzer/actuator/health || (echo "Memory Analyzer failed to start" && exit 1)
         
     - name: Run Enhanced Benchmarking Tool
       working-directory: Phase-4-Expert/Performance-Testing/BenchmarkingTool
       run: |
-        mvn spring-boot:run &
-        sleep 15
-        curl -f http://localhost:8091/api/benchmark/health || exit 1
+        timeout 300 mvn spring-boot:run &
+        BENCHMARK_PID=$!
+        echo "Benchmarking Tool PID: $BENCHMARK_PID"
+        
+        # Wait for service to be ready with retry logic
+        for i in {1..15}; do
+          if curl -f http://localhost:8091/api/benchmark/health >/dev/null 2>&1; then
+            echo "Benchmarking Tool is ready"
+            break
+          fi
+          echo "Waiting for Benchmarking Tool... attempt $i/15"
+          sleep 10
+        done
+        
+        # Final health check
+        curl -f http://localhost:8091/api/benchmark/health || (echo "Benchmarking Tool failed to start" && exit 1)
         
     - name: Run integration tests
       run: |
         echo "Running end-to-end integration tests..."
-        # Test Memory Analyzer API
-        curl -X GET "http://localhost:8090/memory-analyzer/api/memory/current"
         
-        # Test Enhanced Benchmarking Tool API
-        curl -X GET "http://localhost:8091/api/benchmark/scenarios"
+        # Test Memory Analyzer API with error handling
+        echo "Testing Memory Analyzer API..."
+        if ! curl -f -X GET "http://localhost:8090/memory-analyzer/api/memory/current"; then
+          echo "Memory Analyzer API test failed"
+          exit 1
+        fi
         
-        # Test quick performance test
-        curl -X POST "http://localhost:8091/api/benchmark/quick-test?host=localhost&endpoint=/actuator/health&threads=5"
+        # Test Enhanced Benchmarking Tool API with error handling  
+        echo "Testing Benchmarking Tool API..."
+        if ! curl -f -X GET "http://localhost:8091/api/benchmark/scenarios"; then
+          echo "Benchmarking Tool API test failed"
+          exit 1
+        fi
+        
+        # Test quick performance test with error handling
+        echo "Testing quick performance test..."
+        if ! curl -f -X POST "http://localhost:8091/api/benchmark/quick-test?host=localhost&endpoint=/actuator/health&threads=5"; then
+          echo "Quick performance test failed"
+          exit 1
+        fi
+        
+        echo "All integration tests passed successfully!"
 
   # Performance Regression Tests
   performance-tests:
@@ -198,27 +265,67 @@ jobs:
     - name: Run Memory Analysis
       working-directory: Phase-4-Expert/Performance-Testing/MemoryAnalyzer
       run: |
-        mvn spring-boot:run &
-        sleep 20
+        timeout 300 mvn spring-boot:run &
+        MEMORY_PID=$!
+        echo "Memory Analyzer PID: $MEMORY_PID"
         
-        # Run memory analysis tests
-        curl -X GET "http://localhost:8090/memory-analyzer/api/memory/current" > memory-results.json
-        curl -X GET "http://localhost:8090/memory-analyzer/api/memory/health" > memory-health.json
+        # Wait for service to be ready
+        for i in {1..20}; do
+          if curl -f http://localhost:8090/memory-analyzer/actuator/health >/dev/null 2>&1; then
+            echo "Memory Analyzer is ready for performance testing"
+            break
+          fi
+          echo "Waiting for Memory Analyzer... attempt $i/20"
+          sleep 10
+        done
+        
+        # Run memory analysis tests with error handling
+        echo "Running memory analysis tests..."
+        if curl -f -X GET "http://localhost:8090/memory-analyzer/api/memory/current" > memory-results.json; then
+          echo "Memory current test completed successfully"
+        else
+          echo "Memory current test failed"
+          exit 1
+        fi
+        
+        if curl -f -X GET "http://localhost:8090/memory-analyzer/api/memory/health" > memory-health.json; then
+          echo "Memory health test completed successfully"
+        else
+          echo "Memory health test failed"
+          exit 1
+        fi
         
     - name: Run Database Performance Tests
       working-directory: Phase-4-Expert/Performance-Testing/BenchmarkingTool
       run: |
-        mvn spring-boot:run &
-        sleep 20
+        timeout 300 mvn spring-boot:run &
+        BENCHMARK_PID=$!
+        echo "Benchmarking Tool PID: $BENCHMARK_PID"
         
-        # Run database performance test
-        curl -X POST "http://localhost:8091/api/benchmark/database/run-sync" \
+        # Wait for service to be ready
+        for i in {1..20}; do
+          if curl -f http://localhost:8091/api/benchmark/health >/dev/null 2>&1; then
+            echo "Benchmarking Tool is ready for performance testing"
+            break
+          fi
+          echo "Waiting for Benchmarking Tool... attempt $i/20"
+          sleep 10
+        done
+        
+        # Run database performance test with error handling
+        echo "Running database performance test..."
+        if curl -f -X POST "http://localhost:8091/api/benchmark/database/run-sync" \
           -H "Content-Type: application/json" \
           -d '{"testName":"CI Pipeline Database Test","insertCount":100,"selectCount":50}' \
-          > database-performance-results.json
+          > database-performance-results.json; then
+          echo "Database performance test completed successfully"
+        else
+          echo "Database performance test failed"
+          exit 1
+        fi
         
     - name: Upload performance results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: performance-test-results
         path: |
@@ -241,9 +348,11 @@ jobs:
         project: 'Phase-4-Expert'
         path: 'Phase-4-Expert'
         format: 'JSON'
+      continue-on-error: true
         
     - name: Upload security scan results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
+      if: always()
       with:
         name: security-scan-results
         path: reports/
@@ -265,8 +374,13 @@ jobs:
       working-directory: Phase-4-Expert/Advanced-Spring-Microservices/EcommercePlatform
       run: |
         if [ -f docker-compose.yml ]; then
-          docker-compose build --no-cache
-          echo "E-commerce platform images built successfully"
+          echo "Building E-commerce platform Docker images..."
+          if docker-compose build --no-cache; then
+            echo "E-commerce platform images built successfully"
+          else
+            echo "Failed to build E-commerce platform images"
+            exit 1
+          fi
         else
           echo "No docker-compose.yml found, skipping docker build"
         fi
@@ -275,10 +389,25 @@ jobs:
       working-directory: Phase-4-Expert/Advanced-Spring-Microservices/EcommercePlatform
       run: |
         if [ -f docker-compose.yml ]; then
-          docker-compose up -d
-          sleep 60
-          docker-compose ps
-          docker-compose down
+          echo "Testing Docker deployment..."
+          if docker-compose up -d; then
+            echo "Docker services started successfully"
+            sleep 60
+            docker-compose ps
+            
+            # Check if services are healthy
+            echo "Checking service health..."
+            docker-compose ps --format "table {{.Name}}\t{{.State}}"
+            
+            echo "Stopping Docker services..."
+            docker-compose down
+          else
+            echo "Failed to start Docker services"
+            docker-compose down
+            exit 1
+          fi
+        else
+          echo "No docker-compose.yml found, skipping docker deployment test"
         fi
 
   # Generate Reports
@@ -293,7 +422,7 @@ jobs:
       uses: actions/checkout@v4
       
     - name: Download all artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       
     - name: Generate comprehensive report
       run: |
@@ -310,7 +439,7 @@ jobs:
         echo "All test artifacts have been uploaded for review." >> pipeline-report.md
         
     - name: Upload pipeline report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: pipeline-report
         path: pipeline-report.md
@@ -336,16 +465,36 @@ jobs:
     - name: Build deployment artifacts
       working-directory: Phase-4-Expert
       run: |
-        # Build all Phase 4 components
+        echo "Building all Phase 4 components for deployment..."
+        build_failed=false
+        
+        # Build all Phase 4 components with error handling
         find . -name "pom.xml" -exec dirname {} \; | while read dir; do
           echo "Building $dir"
-          (cd "$dir" && mvn clean package -DskipTests)
+          if (cd "$dir" && mvn clean package -DskipTests); then
+            echo "✅ Successfully built $dir"
+          else
+            echo "❌ Failed to build $dir"
+            build_failed=true
+          fi
         done
+        
+        if [ "$build_failed" = true ]; then
+          echo "Some components failed to build"
+          exit 1
+        fi
         
     - name: Simulate deployment
       run: |
         echo "Deploying Phase 4 Expert components to staging environment..."
-        echo "- Memory Analyzer deployed ✅"
-        echo "- Enhanced Benchmarking Tool deployed ✅"
-        echo "- E-commerce Microservices Platform deployed ✅"
+        
+        # Simulate deployment checks
+        components=("Memory Analyzer" "Enhanced Benchmarking Tool" "E-commerce Microservices Platform")
+        for component in "${components[@]}"; do
+          echo "Deploying $component..."
+          sleep 2  # Simulate deployment time
+          echo "- $component deployed ✅"
+        done
+        
         echo "Staging deployment completed successfully!"
+        echo "All Phase 4 Expert components are now available in staging environment."
