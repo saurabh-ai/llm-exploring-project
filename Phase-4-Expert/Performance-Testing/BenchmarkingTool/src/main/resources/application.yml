@@ -1,16 +1,34 @@
 server:
-  port: 8090
+  port: 8091
 
 spring:
   application:
-    name: benchmarking-tool
+    name: enhanced-benchmarking-tool
+  
+  # Database Configuration
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    database-platform: org.hibernate.dialect.H2Dialect
 
 # JMeter Configuration
 jmeter:
   home: src/main/resources/jmeter
   results-directory: target/jmeter-results
   
-# Benchmarking Configuration
+# Enhanced Benchmarking Configuration
 benchmark:
   default:
     threads: 10
@@ -23,12 +41,47 @@ benchmark:
   max-concurrent-tests: 5
   simulation-mode: true
 
+# Database Performance Testing
+performance:
+  database:
+    test:
+      table: performance_test
+      insert-count: 1000
+      select-count: 500
+      update-count: 300
+      delete-count: 100
+      concurrent-connections: 10
+      concurrent-operations: 200
+
+# Microservice Testing
+microservice:
+  test:
+    default-timeout: 30
+    max-concurrent-threads: 20
+    default-requests-per-service: 100
+
+# Reporting Configuration
+reporting:
+  output-directory: target/reports
+  include-charts: true
+  generate-html: true
+  generate-json: true
+
+# OpenAPI Documentation
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+
 # Logging Configuration
 logging:
   level:
     com.javamastery.performance.benchmarking: DEBUG
     org.apache.jmeter: WARN
+    org.springframework.jdbc: DEBUG
   pattern:
     console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
   file:
-    name: logs/benchmarking-tool.log
+    name: logs/enhanced-benchmarking-tool.log

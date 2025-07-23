@@ -179,6 +179,104 @@ cd scheduler-service && mvn test
 - [x] PostgreSQL database schema with initialization script
 - [x] Health checks and metrics collection
 - [x] Unit and integration tests infrastructure
+- [x] **ENHANCED:** Advanced Analytics Service with enterprise-grade monitoring
+- [x] **ENHANCED:** Performance analytics and execution forecasting
+- [x] **ENHANCED:** Service dependency analysis and bottleneck detection
+- [x] **ENHANCED:** Real-time metrics with JVM and business intelligence
+- [x] **ENHANCED:** Alerting insights and recommended thresholds
+- [x] **ENHANCED:** System health scoring and trend analysis
+
+### 🔥 Enterprise-Grade Features Added
+- **Advanced Performance Analytics** - Comprehensive execution trends, success rate analysis, and performance metrics
+- **Real-Time Monitoring** - JVM metrics, application metrics, and custom business metrics with live updates
+- **Predictive Analytics** - Execution forecasting, resource requirement predictions, and capacity planning
+- **Service Dependency Mapping** - Health matrix, dependency graphs, and critical path analysis
+- **Intelligent Alerting** - Active alert management, trend analysis, and threshold recommendations
+- **System Health Scoring** - Composite health scores with automated status determination
+
+### 📊 Advanced Analytics Endpoints
+
+#### Performance Analytics
+```bash
+# Get comprehensive performance analytics
+GET /api/v1/analytics/performance
+
+# Response includes:
+# - Execution trends (hourly patterns, peak analysis)
+# - Success rate analysis (overall and by job type)
+# - Performance metrics (throughput, queue depth, processing times)
+# - Resource utilization (CPU, memory, disk, network)
+# - Failure analysis (categorized failures and root causes)
+```
+
+#### Real-Time Metrics
+```bash
+# Get real-time system metrics
+GET /api/v1/analytics/realtime
+
+# Response includes:
+# - JVM metrics (memory usage, GC stats, thread counts)
+# - Application metrics (HTTP requests, connections, uptime)
+# - Business metrics (jobs scheduled, completion rates)
+# - System health score (composite scoring algorithm)
+```
+
+#### Execution Forecasting
+```bash
+# Get execution forecast and capacity planning
+GET /api/v1/analytics/forecast
+
+# Response includes:
+# - Next hour execution predictions
+# - Daily execution forecast (7-day outlook)
+# - Resource requirement forecasting
+# - Confidence intervals and accuracy metrics
+```
+
+#### Service Dependency Analysis
+```bash
+# Get service health and dependency analysis
+GET /api/v1/analytics/dependencies
+
+# Response includes:
+# - Service health matrix (status, response times, error rates)
+# - Dependency graph (service relationships)
+# - Critical path analysis (failure impact assessment)
+# - Bottleneck identification and recommendations
+```
+
+#### Alerting Intelligence
+```bash
+# Get alerting insights and recommendations
+GET /api/v1/analytics/alerts
+
+# Response includes:
+# - Active alerts with severity levels
+# - Alert trends and patterns
+# - Recommended threshold settings
+# - Historical alert analysis
+```
+
+### 🎯 Enhanced Learning Objectives Achieved
+
+#### ✅ Advanced Monitoring & Analytics
+- **Enterprise Monitoring Patterns** - Real-time metrics collection and analysis
+- **Predictive Analytics** - Forecasting and capacity planning algorithms
+- **Performance Optimization** - Bottleneck detection and resource analysis
+- **Service Health Management** - Comprehensive health scoring and dependency mapping
+- **Intelligent Alerting** - Proactive alert management and threshold optimization
+
+#### ✅ Microservices Excellence
+- **Service Orchestration** - Complex multi-service coordination
+- **Fault Tolerance** - Circuit breakers, graceful degradation, and resilience patterns
+- **Scalability Patterns** - Load balancing, auto-scaling readiness, and resource optimization
+- **Monitoring Integration** - Comprehensive observability and metrics collection
+
+#### ✅ Enterprise Architecture Patterns
+- **Observer Pattern** - Advanced event-driven monitoring system
+- **Strategy Pattern** - Multiple analytics and forecasting strategies
+- **Factory Pattern** - Metric and alert generation
+- **Decorator Pattern** - Enhanced analytics with layered insights
 
 ## 📄 License
 
