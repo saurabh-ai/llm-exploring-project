@@ -1,0 +1,67 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+  
+  # Configuration Repository
+  cloud:
+    config:
+      server:
+        git:
+          uri: file://${user.home}/config-repo
+          default-label: main
+        # Enable environment-specific configuration
+        health:
+          repositories:
+            - name: ecommerce-platform
+              label: main
+        # Encryption settings
+        encrypt:
+          enabled: true
+  
+  # RabbitMQ for Spring Cloud Bus
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  
+  # Security settings
+  security:
+    user:
+      name: config-admin
+      password: admin-secret
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+    refresh:
+      enabled: true
+    restart:
+      enabled: true
+  health:
+    rabbit:
+      enabled: false  # Disable if RabbitMQ is not available
+
+# Logging
+logging:
+  level:
+    org.springframework.cloud.config: DEBUG
+    org.springframework.security: INFO
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Info endpoint
+info:
+  app:
+    name: Spring Cloud Config Server
+    description: Centralized configuration management for microservices
+    version: 1.0.0

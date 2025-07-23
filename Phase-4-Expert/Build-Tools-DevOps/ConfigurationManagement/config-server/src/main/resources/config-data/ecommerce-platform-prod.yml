@@ -1,0 +1,74 @@
+# Production environment configuration
+
+spring:
+  datasource:
+    url: jdbc:mysql://prod-mysql-server:3306/ecommerce_prod
+    username: ${DB_USERNAME:ecommerce_user}
+    password: ${DB_PASSWORD:secure_password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 20000
+  
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    properties:
+      hibernate:
+        cache:
+          use_second_level_cache: true
+          use_query_cache: true
+
+# Production Eureka settings
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server-1:8761/eureka/,http://eureka-server-2:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: false
+    hostname: ${HOSTNAME:localhost}
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
+# Production circuit breaker settings
+resilience4j:
+  circuitbreaker:
+    instances:
+      default:
+        sliding-window-size: 20
+        minimum-number-of-calls: 10
+        wait-duration-in-open-state: 60s
+        failure-rate-threshold: 40
+        permitted-number-of-calls-in-half-open-state: 5
+
+# Production JWT settings
+jwt:
+  secret: ${JWT_SECRET:prodSecretKey123456789012345678901234567890}
+  expiration: 86400000  # 24 hours
+
+# Production logging
+logging:
+  level:
+    com.javamastery.ecommerce: INFO
+    org.springframework.cloud: WARN
+    org.springframework.security: WARN
+    org.hibernate: WARN
+  file:
+    name: /var/log/ecommerce-platform/application.log
+  pattern:
+    file: "%d{ISO8601} [%thread] %-5level %logger{36} - %msg%n"
+
+# Production actuator settings (limited exposure)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized

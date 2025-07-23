@@ -1,0 +1,70 @@
+# Configuration for Performance Testing Tools
+
+server:
+  port: ${SERVER_PORT:8090}
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+
+# Memory Analyzer Configuration
+memory:
+  analyzer:
+    collection:
+      interval: 30000
+    max:
+      snapshots: 1000
+    leak:
+      detection:
+        threshold: 80.0
+
+# Performance Testing Configuration
+performance:
+  database:
+    test:
+      table: performance_test
+      insert-count: 1000
+      concurrent-connections: 10
+  
+  microservice:
+    test:
+      default-timeout: 30
+      max-concurrent-threads: 20
+
+# JMeter Configuration
+jmeter:
+  home: ${JMETER_HOME:src/main/resources/jmeter}
+  results-directory: ${JMETER_RESULTS_DIR:target/jmeter-results}
+
+# Reporting Configuration
+reporting:
+  output-directory: ${REPORT_OUTPUT_DIR:target/reports}
+  include-charts: true
+  generate-html: true
+  generate-json: true
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus,info
+  endpoint:
+    health:
+      show-details: always
+
+# Logging Configuration
+logging:
+  level:
+    com.javamastery.performance: DEBUG
+    org.apache.jmeter: WARN
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
