@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  # Discovery Service (Eureka Server)
+  discovery-service:
+    image: openjdk:17-jdk-slim
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    working_dir: /app
+    volumes:
+      - ./discovery-service/target:/app
+    command: java -jar discovery-service-1.0.0.jar
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # API Gateway
+  api-gateway:
+    image: openjdk:17-jdk-slim
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    working_dir: /app
+    volumes:
+      - ./api-gateway/target:/app
+    command: java -jar api-gateway-1.0.0.jar
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # User Service
+  user-service:
+    image: openjdk:17-jdk-slim
+    container_name: user-service
+    ports:
+      - "8081:8081"
+    working_dir: /app
+    volumes:
+      - ./user-service/target:/app
+    command: java -jar user-service-1.0.0.jar
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+
+  # Product Service
+  product-service:
+    image: openjdk:17-jdk-slim
+    container_name: product-service
+    ports:
+      - "8082:8082"
+    working_dir: /app
+    volumes:
+      - ./product-service/target:/app
+    command: java -jar product-service-1.0.0.jar
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+
+  # Order Service
+  order-service:
+    image: openjdk:17-jdk-slim
+    container_name: order-service
+    ports:
+      - "8083:8083"
+    working_dir: /app
+    volumes:
+      - ./order-service/target:/app
+    command: java -jar order-service-1.0.0.jar
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+
+networks:
+  default:
+    driver: bridge
