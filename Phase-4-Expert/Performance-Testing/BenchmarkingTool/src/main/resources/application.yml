@@ -1,0 +1,34 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: benchmarking-tool
+
+# JMeter Configuration
+jmeter:
+  home: src/main/resources/jmeter
+  results-directory: target/jmeter-results
+  
+# Benchmarking Configuration
+benchmark:
+  default:
+    threads: 10
+    ramp-up-time: 30
+    iterations: 100
+    duration-seconds: 60
+    connection-timeout: 5000
+    response-timeout: 10000
+  
+  max-concurrent-tests: 5
+  simulation-mode: true
+
+# Logging Configuration
+logging:
+  level:
+    com.javamastery.performance.benchmarking: DEBUG
+    org.apache.jmeter: WARN
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/benchmarking-tool.log
